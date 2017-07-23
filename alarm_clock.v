@@ -14,22 +14,22 @@ module alarm_clock(SW, HEX7, HEX6, HEX5, HEX4, HEX3, HEX2, HEX1, HEX0, CLOCK_50,
 
 
     myClock c0(
-  	      .clk(CLOCK_50),
-          .resetn(resetn),
-          .alarm_reset(alarm_reset),
-          .go(load),
-          .data_in(SW[3:0]),
-          .alarm_start(SW[5]),
-          .min1(min1),
-          .min2(min2),
-          .hour1(hour1),
-          .hour2(hour2),
-          .sec1(sec1),
-          .sec2(sec2),
-          .timer1(timer1),
-          .timer2(timer2),
-          .alarm_out(alarm_out)
-          );
+  	      	.clk(CLOCK_50),
+          	.resetn(resetn),
+          	.alarm_reset(alarm_reset),
+          	.go(load),
+	  	.data_in(SW[3:0]),
+	  	.alarm_start(SW[5]),
+	  	.min1(min1),
+	  	.min2(min2),
+	  	.hour1(hour1),
+	  	.hour2(hour2),
+	  	.sec1(sec1),
+	 	.sec2(sec2),
+	  	.timer1(timer1),
+	  	.timer2(timer2),
+	  	.alarm_out(alarm_out)
+	 	);
 
     hex_decoder_9MAX H7(
           .hex_digit(hour1),
@@ -84,51 +84,51 @@ module myClock(
     wire ld_min1, ld_min2, ld_hour1, ld_hour2, ld_alarm, start;
 
     control C0(
-        .clk(clk),
-        .resetn(resetn),
-		    .reset_alarm(alarm_reset),
-        .go(go),
-        .ld_alarm(ld_alarm),
-        .ld_hour1(ld_hour1),
-        .ld_hour2(ld_hour2),
-        .ld_min1(ld_min1),
-        .ld_min2(ld_min2),
-        .start(start)
-    );
+		.clk(clk),
+		.resetn(resetn),
+		.reset_alarm(alarm_reset),
+		.go(go),
+		.ld_alarm(ld_alarm),
+		.ld_hour1(ld_hour1),
+		.ld_hour2(ld_hour2),
+		.ld_min1(ld_min1),
+		.ld_min2(ld_min2),
+		.start(start)
+		);
 
     datapath D0(
-        .clk(clk),
-        .resetn(resetn),
-        .reset_alarm(alarm_reset),
-        .alarm_start(alarm_start),
-        .ld_hour1(ld_hour1),
-        .ld_hour2(ld_hour2),
-        .ld_min1(ld_min1),
-        .ld_min2(ld_min2),
-        .start(start),
-        .data_in(data_in),
-        .hour1(hour1),
-        .hour2(hour2),
-        .min1(min1),
-        .min2(min2),
-        .sec1(sec1),
-        .sec2(sec2),
-		    .timer1(timer1),
-		    .timer2(timer2),
-        .alarm_out(alarm_out)
-     );
+		.clk(clk),
+		.resetn(resetn),
+		.reset_alarm(alarm_reset),
+		.alarm_start(alarm_start),
+		.ld_hour1(ld_hour1),
+		.ld_hour2(ld_hour2),
+		.ld_min1(ld_min1),
+		.ld_min2(ld_min2),
+		.start(start),
+		.data_in(data_in),
+		.hour1(hour1),
+		.hour2(hour2),
+		.min1(min1),
+		.min2(min2),
+		.sec1(sec1),
+		.sec2(sec2),
+		.timer1(timer1),
+		.timer2(timer2),
+		.alarm_out(alarm_out)
+		);
 
 
  endmodule
 
  module control(
-    input clk,
-    input resetn,
-	  input reset_alarm,
-    input go,
+		input clk,
+		input resetn,
+		input reset_alarm,
+		input go,
 
-    output reg  ld_min1, ld_min2, ld_hour1, ld_hour2, ld_alarm, start
-    );
+		output reg  ld_min1, ld_min2, ld_hour1, ld_hour2, ld_alarm, start
+		);
 
     reg [5:0] current_state, next_state;
 
@@ -205,11 +205,11 @@ module myClock(
     begin: clock_FFs
         if(resetn) // reset the clock and the alarm
             current_state <= s_ld_hour1;
-		    else if(reset_alarm) // reset the alarm only
-				    current_state <= s_ld_alarm;
-        else
-            current_state <= next_state;
-    end
+	else if(reset_alarm) // reset the alarm only
+	    current_state <= s_ld_alarm;
+	else
+	    current_state <= next_state;
+    	end
 endmodule
 
 
@@ -225,7 +225,7 @@ module datapath(
     output reg [3:0] min2,
     output reg [3:0] sec1,
     output reg [3:0] sec2,
-	 output reg [3:0] timer1,
+    output reg [3:0] timer1,
     output reg [3:0] timer2,
     output reg alarm_out
     );
@@ -233,7 +233,7 @@ module datapath(
     // time will be displayed on the hex diplays in the form: hour1:hour2 min1:min2 sec1:sec2
     reg [3:0] hour1_val, hour2_val, min1_val, min2_val, sec1_val, sec2_val, timer1_val, timer2_val;
     reg [7:0] alarm_max;
-	 reg [27:0] counter_1s; // counter to edit the frequency of the clock from 50MHz to 1Hz
+    reg [27:0] counter_1s; // counter to edit the frequency of the clock from 50MHz to 1Hz
     localparam counter_1s_max = 28'b10111110101111000001111111;
 
     always@(posedge clk) begin
@@ -255,23 +255,23 @@ module datapath(
         end
 
         else begin
-				    counter_1s <= 28'd0;
+            counter_1s <= 28'd0;
             if(ld_hour1) begin
-               hour1 <= data_in; // give hour1 the value of SW[2:0]
-    					 hour1_val <= data_in;
-    				   end
+               	hour1 <= data_in; // give hour1 the value of SW[2:0]
+		hour1_val <= data_in;
+		end
             if(ld_hour2) begin
-               hour2 <= data_in;  // give hour2 the value of SW[2:0]
-    				   hour2_val <= data_in;
-    				   end
+		hour2 <= data_in;  // give hour2 the value of SW[2:0]
+		hour2_val <= data_in;
+		end
             if(ld_min1) begin
-        		    min1 <= data_in;  // give min1 the value of SW[2:0]
-        				min1_val <= data_in;
-        		    end
+		min1 <= data_in;  // give min1 the value of SW[2:0]
+		min1_val <= data_in;
+		end
             if(ld_min2) begin
-                min2 <= data_in;  // give min2 the value of SW[2:0]
-					      min2_val <= data_in;
-    				    end
+		min2 <= data_in;  // give min2 the value of SW[2:0]
+		min2_val <= data_in;
+		end
             if(ld_alarm) begin   // select the alarm using SW[1:0]
                 timer1 <= timer1_val;
                 timer2 <= timer2_val;
@@ -303,67 +303,66 @@ module datapath(
                         end
                 endcase
                 end
-                end
+	end
 
     		if (start) begin // clock starts
-            hour1 <= hour1_val; // display hex values
-      		  hour2 <= hour2_val;
-      		  min1 <= min1_val;
-      		  min2 <= min2_val;
-            sec1 <= sec1_val;
-            sec2 <= sec2_val;
-				    timer1 <= timer1_val;
-				    timer2 <= timer2_val;
-    			  counter_1s <= counter_1s + 1'b1;
+			hour1 <= hour1_val; // display hex values
+			hour2 <= hour2_val;
+			min1 <= min1_val;
+			min2 <= min2_val;
+			sec1 <= sec1_val;
+			sec2 <= sec2_val;
+			timer1 <= timer1_val;
+			timer2 <= timer2_val;
+			counter_1s <= counter_1s + 1'b1;
 
-    			  if (counter_1s == counter_1s_max) begin
+			if (counter_1s == counter_1s_max) begin
 
-    						if (alarm_start) begin // timer countdown starts
+			if (alarm_start) begin // timer countdown starts
+				timer2_val <= timer2_val - 1'b1;
 
-    								timer2_val <= timer2_val - 1'b1;
+			if ((timer1_val > 4'd0) && (timer2_val == 4'd0)) begin
+				timer2_val <= 4'd9;
+				timer1_val <= timer1_val - 1'b1;
+				end
 
-        						if ((timer1_val > 4'd0) && (timer2_val == 4'd0)) begin
-        								timer2_val <= 4'd9;
-        								timer1_val <= timer1_val - 1'b1;
-        								end
+			if ({timer1_val, timer2_val} == 8'b0) begin
+				alarm_out <= 1'b1;
+				end
+		        end
 
-        						if ({timer1_val, timer2_val} == 8'b0) begin
-        								alarm_out <= 1'b1;
-        						    end
-						        end
+    			counter_1s <= 28'b0; // reset the counter to zero
+		        sec2_val <= sec2_val + 1'b1; // the least significant value of SS will be decremented with each 1 second clock pulse
 
-    			  counter_1s <= 28'b0; // reset the counter to zero
-						sec2_val <= sec2_val + 1'b1; // the least significant value of SS will be decremented with each 1 second clock pulse
+			if (sec2_val >= 9) begin
+				sec1_val <= sec1_val + 1'b1;
+				sec2_val <= 4'd0;
+				end
 
-						if (sec2_val >= 9) begin
-								sec1_val <= sec1_val + 1'b1;
-								sec2_val <= 4'd0;
-								end
+			if ({sec1_val, sec2_val} >= 8'h59) begin
+				sec1_val <= 4'd0;
+				sec2_val <= 4'd0;
+				min2_val <= min2_val + 1'b1;
+				end
 
-    				if ({sec1_val, sec2_val} >= 8'h59) begin
-                sec1_val <= 4'd0;
-                sec2_val <= 4'd0;
-                min2_val <= min2_val + 1'b1;
-    				    end
+			if (min2_val >= 9) begin
+				min1_val <= min1_val + 1'b1;
+				min2_val <= 4'd0;
+			end
 
-						if (min2_val >= 9) begin
-							  min1_val <= min1_val + 1'b1;
-							  min2_val <= 4'd0;
-						    end
+			if ({min1_val, min2_val} >= 8'h59) begin
+				min1_val <= 4'd0;
+				min2_val <= 4'd0;
+				hour2_val <= hour2_val + 1'b1;
+			end
 
-    				if ({min1_val, min2_val} >= 8'h59) begin
-                min1_val <= 4'd0;
-                min2_val <= 4'd0;
-                hour2_val <= hour2_val + 1'b1;
-    					  end
-
-    				if ({hour1_val, hour2_val} >= 8'h24) begin
-      					hour1_val <= 4'b0;
-      					hour2_val <= 4'b0;
-    				    end
-    		    end
-		    end
+			if ({hour1_val, hour2_val} >= 8'h24) begin
+				hour1_val <= 4'b0;
+				hour2_val <= 4'b0;
+			end
 		end
+	end
+end
 endmodule
 
 module hex_decoder_9MAX(hex_digit, segments);
