@@ -1,4 +1,4 @@
-module alarm(SW, HEX7, HEX6, HEX5, HEX4, HEX3, HEX2, HEX1, HEX0, CLOCK_50, KEY, LEDG);
+module alarm_clock(SW, HEX7, HEX6, HEX5, HEX4, HEX3, HEX2, HEX1, HEX0, CLOCK_50, KEY, LEDG);
     input [9:0] SW;
     input CLOCK_50;
     input [2:0] KEY;
