@@ -273,33 +273,33 @@ module datapath(
 		min2_val <= data_in;
 		end
             if(ld_alarm) begin   // select the alarm using SW[1:0]
-                timer1 <= timer1_val;
-                timer2 <= timer2_val;
+               // timer1 <= timer1_val;
+                //timer2 <= timer2_val;
                 case(data_in)
                 4'b0000:
                         begin
-                        timer1_val <= 4'd1;  // 15 second timer
-                        timer2_val <= 4'd5;
+                        timer1 <= 4'd1;  // 15 second timer
+                        timer2 <= 4'd5;
                         end
                 4'b0001:
                         begin
-                        timer1_val <= 4'd3; // 30 second timer
-                        timer2_val <= 4'd0;
+                        timer1 <= 4'd3; // 30 second timer
+                        timer2 <= 4'd0;
                         end
                 4'b0010:
                         begin
-                        timer1_val <= 4'd4; // 45 second timer
-                        timer2_val <= 4'd5;
+                        timer1 <= 4'd4; // 45 second timer
+                        timer2 <= 4'd5;
                         end
                 4'b0011:
                         begin
-                        timer1_val <= 4'd6; // 60 second timer
-                        timer2_val <= 4'd0;
+                        timer1 <= 4'd6; // 60 second timer
+                        timer2 <= 4'd0;
                         end
                 default:
                         begin // 0 second timer which will only go off if alarm_start = 1
-                        timer1_val <= 4'd0;
-                        timer2_val <= 4'd0;
+                        timer1 <= 4'd1;
+                        timer2 <= 4'd5;
                         end
                 endcase
                 end
@@ -312,24 +312,24 @@ module datapath(
 			min2 <= min2_val;
 			sec1 <= sec1_val;
 			sec2 <= sec2_val;
-			timer1 <= timer1_val;
-			timer2 <= timer2_val;
+			//timer1 <= timer1_val;
+			//timer2 <= timer2_val;
 			counter_1s <= counter_1s + 1'b1;
 
 			if (counter_1s == counter_1s_max) begin
 
-			if (alarm_start) begin // timer countdown starts
-				timer2_val <= timer2_val - 1'b1;
+			//if (alarm_start) begin // timer countdown starts
+			if (timer2 == 4'd0) begin
+				timer2 <= 4'd9;
+				timer1 <= timer1 - 1'b1;
+			end else begin
+				timer2 <= timer2 - 1'b1;
+			end
 
-			if ((timer1_val > 4'd0) && (timer2_val == 4'd0)) begin
-				timer2_val <= 4'd9;
-				timer1_val <= timer1_val - 1'b1;
-				end
-
-			if ({timer1_val, timer2_val} == 8'b0) begin
+			if ({timer1, timer2} == 8'b0) begin
 				alarm_out <= 1'b1;
 				end
-		        end
+		      //  end
 
     			counter_1s <= 28'b0; // reset the counter to zero
 		        sec2_val <= sec2_val + 1'b1; // the least significant value of SS will be decremented with each 1 second clock pulse
