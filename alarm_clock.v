@@ -15,12 +15,11 @@ module alarm_clock(SW, HEX7, HEX6, HEX5, HEX4, HEX3, HEX2, HEX1, HEX0, CLOCK_50,
 
     myClock c0(
   	      	.clk(CLOCK_50),
-          	.resetn(resetn),
-          	.alarm_reset(alarm_reset),
-          	.go(load),
-	  	.data_in(SW[3:0]),
-	  	.alarm_start(SW[5]),
-	  	.min1(min1),
+	    	.resetn(resetn), // resets the entire clock and alarm
+	    	.alarm_reset(alarm_reset), // resets the alarm only
+	    	.go(load), // signal to move to the next state in ths FSM
+	    	.data_in(SW[3:0]), // used to declares the values for HH:MM and selecting the alarm
+	    	.min1(min1), // output's to the hex displays
 	  	.min2(min2),
 	  	.hour1(hour1),
 	  	.hour2(hour2),
@@ -28,7 +27,7 @@ module alarm_clock(SW, HEX7, HEX6, HEX5, HEX4, HEX3, HEX2, HEX1, HEX0, CLOCK_50,
 	 	.sec2(sec2),
 	  	.timer1(timer1),
 	  	.timer2(timer2),
-	  	.alarm_out(alarm_out)
+	    	.alarm_out(alarm_out) // output to an LED which lights up when the timer reaches 0
 	 	);
 
     hex_decoder_9MAX H7(
@@ -74,13 +73,13 @@ endmodule
 
 module myClock(
     input clk,
-    input resetn, alarm_reset, alarm_start, go,
+    input resetn, alarm_reset, go,
     input [3:0] data_in,
     output [3:0] hour1, hour2, min1, min2, sec1, sec2, timer1, timer2,
     output alarm_out
     );
 
-    // lots of wires to connect our datapath and control
+    // connects the datapath to the control
     wire ld_min1, ld_min2, ld_hour1, ld_hour2, ld_alarm, start;
 
     control C0(
@@ -100,7 +99,6 @@ module myClock(
 		.clk(clk),
 		.resetn(resetn),
 		.reset_alarm(alarm_reset),
-		.alarm_start(alarm_start),
 		.ld_hour1(ld_hour1),
 		.ld_hour2(ld_hour2),
 		.ld_min1(ld_min1),
@@ -163,10 +161,9 @@ module myClock(
     end
 
 
-    // Output logic aka all of our datapath control signals
     always @(*)
     begin: enable_signals
-        // By default make all our signals 0
+        // all signals 0 by default
         ld_min1 <= 1'b0;
         ld_min2 <= 1'b0;
         ld_hour1 <= 1'b0;
@@ -216,7 +213,6 @@ endmodule
 module datapath(
     input clk,
     input resetn, reset_alarm,
-    input alarm_start,
     input [3:0] data_in,
     input ld_min1, ld_min2, ld_hour1, ld_hour2, ld_alarm, start,
     output reg [3:0] hour1,
@@ -272,9 +268,7 @@ module datapath(
 		min2 <= data_in;  // give min2 the value of SW[2:0]
 		min2_val <= data_in;
 		end
-            if(ld_alarm) begin   // select the alarm using SW[1:0]
-               // timer1 <= timer1_val;
-                //timer2 <= timer2_val;
+	    if(ld_alarm) begin   // select the alarm using SW[1:0]
                 case(data_in)
                 4'b0000:
                         begin
@@ -297,7 +291,7 @@ module datapath(
                         timer2 <= 4'd0;
                         end
                 default:
-                        begin // 0 second timer which will only go off if alarm_start = 1
+                        begin // 0 second timer
                         timer1 <= 4'd1;
                         timer2 <= 4'd5;
                         end
@@ -312,13 +306,11 @@ module datapath(
 			min2 <= min2_val;
 			sec1 <= sec1_val;
 			sec2 <= sec2_val;
-			//timer1 <= timer1_val;
-			//timer2 <= timer2_val;
+
 			counter_1s <= counter_1s + 1'b1;
 
 			if (counter_1s == counter_1s_max) begin
 
-			//if (alarm_start) begin // timer countdown starts
 			if (timer2 == 4'd0) begin
 				timer2 <= 4'd9;
 				timer1 <= timer1 - 1'b1;
@@ -328,12 +320,12 @@ module datapath(
 
 			if ({timer1, timer2} == 8'b0) begin
 				alarm_out <= 1'b1;
-				end
-		      //  end
+			end
 
     			counter_1s <= 28'b0; // reset the counter to zero
-		        sec2_val <= sec2_val + 1'b1; // the least significant value of SS will be decremented with each 1 second clock pulse
 
+		        sec2_val <= sec2_val + 1'b1; // the least significant value of SS will be 
+						     // decremented with each 1 second clock pulse
 			if (sec2_val >= 9) begin
 				sec1_val <= sec1_val + 1'b1;
 				sec2_val <= 4'd0;
